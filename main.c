@@ -535,7 +535,8 @@ int handle_client_tcp_frame(protocol_frame *rcvd_frame)
                 tun->sockfd, 
                 rcvd_frame->data + offset,
                 rcvd_frame->data_length - offset,
-                MSG_NOSIGNAL
+		0
+//                MSG_NOSIGNAL
         );
 
         if(sent_bytes < 0)
@@ -1081,6 +1082,7 @@ int do_server_loop()
     }
 }
 
+#if 0
 /* Signal handler used when daemonizing */
 static void child_handler(int signum)
 {
@@ -1216,6 +1218,7 @@ void do_daemonize()
     /* Tell the parent process that we are A-okay */
     kill( parent, SIGUSR1 );    
 }
+#endif
 
 void help()
 {
@@ -1458,7 +1461,8 @@ int main(int argc, char *argv[])
 
     if(daemonize)
     {
-        do_daemonize();
+        //do_daemonize();
+	fprintf(stderr, "Cannot daemonize on Windows!\n");
     }
 
     atexit(cleanup);

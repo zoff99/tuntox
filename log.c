@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <syslog.h>
+//#include <syslog.h>
 #include <time.h>
 
 #include "log.h"
@@ -49,7 +49,8 @@ void log_init(void)
 {
     if(use_syslog)
     {
-        openlog("tuntox", LOG_PID, LOG_LOCAL1);
+	fprintf(stderr, "Not on Windows\n");
+        //openlog("tuntox", LOG_PID, LOG_LOCAL1);
     }
 }
 
@@ -57,7 +58,8 @@ void log_close(void)
 {
     if(use_syslog)
     {
-        closelog();
+	fprintf(stderr, "Not on Windows\n");
+        //closelog();
     }
 }
 
@@ -99,9 +101,12 @@ void log_printf(int level, const char *fmt, ...)
     }
     else
     {
+	fprintf(stderr, "Not on Windows\n");
+#if 0
         va_start(args, fmt);
         vsyslog(LOG_MAKEPRI(LOG_LOCAL1, level), fmt, args);
         va_end(args);
+#endif
     }
 }
 

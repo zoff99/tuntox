@@ -1,7 +1,7 @@
 #include "log.h"
 #include "util.h"
 #include <string.h>
-#include <tox/tox.h>
+#include "tox/tox.h"
 #include <stdio.h>
 #include <stdlib.h>
 

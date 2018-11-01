@@ -1,13 +1,13 @@
 SOURCES = $(wildcard *.c)
 DEPS=toxcore
 CC=gcc
-CFLAGS=-g -Wall #-std=c99
-CFLAGS += $(shell pkg-config --cflags $(DEPS))
-LDFLAGS=-g -pthread -lm -static -lrt
-LDFLAGS += $(shell pkg-config --static --libs $(DEPS))
-DSO_LDFLAGS=-g -pthread -lm -lrt
+CFLAGS=-g -Wall -I/c/toxcore/include -pthread
+#CFLAGS += $(shell pkg-config --cflags $(DEPS))
+LDFLAGS=-pthread -g -lm #-static
+#LDFLAGS += $(shell pkg-config --static --libs $(DEPS))
+DSO_LDFLAGS=-g -lm
 DSO_LDFLAGS += $(shell pkg-config --libs $(DEPS))
-OBJECTS=$(SOURCES:.c=.o)
+OBJECTS=$(SOURCES:.c=.o) libtoxcore.a libsodium.a
 INCLUDES = $(wildcard *.h)
 
 
@@ -27,10 +27,10 @@ tox_bootstrap.h:
 	@$(CC) -c $(CFLAGS) $< -o $@
 
 tuntox: $(OBJECTS) $(INCLUDES)
-	$(CC) -o $@ $(OBJECTS) -lpthread $(LDFLAGS) 
+	$(CC) -o $@ $(OBJECTS) $(LDFLAGS) 
 
 tuntox_nostatic: $(OBJECTS) $(INCLUDES)
-	$(CC) -o $@ $(OBJECTS) -lpthread $(DSO_LDFLAGS) 
+	$(CC) -o $@ $(OBJECTS) $(DSO_LDFLAGS) 
 
 cscope.out:
 	@echo "  GEN   $@"

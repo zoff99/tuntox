@@ -13,7 +13,7 @@
 int state = CLIENT_STATE_INITIAL;
 
 /* Used in ping mode */
-struct timespec ping_sent_time;
+time_t windows_ping_sent_time;
 
 /* Client mode tunnel */
 tunnel client_tunnel;
@@ -25,15 +25,7 @@ fd_set client_master_fdset;
 
 int handle_pong_frame()
 {
-    struct timespec pong_rcvd_time;
-    double secs1, secs2;
-
-    clock_gettime(CLOCK_MONOTONIC, &pong_rcvd_time);
-
-    secs1 = (1.0 * ping_sent_time.tv_sec) + (1e-9 * ping_sent_time.tv_nsec);
-    secs2 = (1.0 * pong_rcvd_time.tv_sec) + (1e-9 * pong_rcvd_time.tv_nsec);
-
-    log_printf(L_INFO, "GOT PONG! Time = %.3fs\n", secs2-secs1);
+    log_printf(L_INFO, "GOT PONG! Time = %ds (Windows build only has 1s precision)\n", time(NULL) - windows_ping_sent_time);
 
     if(ping_mode)
     {
@@ -83,17 +75,19 @@ int local_bind()
     }
 
     /* Set O_NONBLOCK to make accept() non-blocking */
-    if (-1 == (flags = fcntl(bind_sockfd, F_GETFL, 0)))
+/*    if (-1 == (flags = fcntl(bind_sockfd, F_GETFL, 0)))
     {
         flags = 0;
-    }
-    if(fcntl(bind_sockfd, F_SETFL, flags | O_NONBLOCK) < 0)
+    }*/
+    int opt = 1;
+    ioctlsocket(bind_sockfd, FIONBIO, &opt);
+/*    if(fcntl(bind_sockfd, F_SETFL, flags | O_NONBLOCK) < 0)
     {
         log_printf(L_ERROR, "Could not make the socket non-blocking: %s\n", strerror(errno));
         freeaddrinfo(res);
         exit(1);
     }
-
+*/
     if(bind(bind_sockfd, res->ai_addr, res->ai_addrlen) < 0)
     {
         log_printf(L_ERROR, "Bind to port %d failed: %s\n", local_port, strerror(errno));
@@ -189,7 +183,7 @@ int handle_server_tcp_frame(protocol_frame *rcvd_frame)
                     tun->sockfd, 
                     rcvd_frame->data + offset,
                     rcvd_frame->data_length - offset,
-                    MSG_NOSIGNAL
+                    0//MSG_NOSIGNAL
             );
         }
 
@@ -283,7 +277,7 @@ int do_client_loop(uint8_t *tox_id_str)
     if(!ping_mode && !client_pipe_mode)
     {
         local_bind();
-        signal(SIGPIPE, SIG_IGN);
+        //signal(SIGPIPE, SIG_IGN);
     }
 
     log_printf(L_INFO, "Connecting to Tox...\n");
@@ -413,7 +407,7 @@ int do_client_loop(uint8_t *tox_id_str)
                         0x48, 0x65, 0x6c, 0x6c, 0x6f
                     };
 
-                    clock_gettime(CLOCK_MONOTONIC, &ping_sent_time);
+		    windows_ping_sent_time = time(NULL);
                     tox_friend_send_lossless_packet(
                             tox,
                             friendnumber,
