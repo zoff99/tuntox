@@ -10,12 +10,16 @@ INCLUDES = $(wildcard *.h)
 
 all: cscope.out tuntox 
 
+tox_bootstrap.h: 
+	python generate_tox_bootstrap.py 
+
 gitversion.h: .git/HEAD .git/index
 	echo "#define GITVERSION \"$(shell git rev-parse HEAD)\"" > $@
 
 gitversion.c: gitversion.h
 
-.c.o: $(INCLUDES)
+#.c.o: $(INCLUDES)
+%.o: %.c $(INCLUDES) gitversion.h tox_bootstrap.h
 	$(CC) $(CFLAGS) $< -c -o $@
 
 tuntox: $(OBJECTS) $(INCLUDES)
