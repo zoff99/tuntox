@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
-#include <tox/tox.h>
+#include "tox/tox.h"
 
 #include "cJSON.h"
 #include "log.h"

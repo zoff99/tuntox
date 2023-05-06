@@ -1643,9 +1643,9 @@ int main(int argc, char *argv[])
     tox_options.udp_enabled = 1;
     tox_options.local_discovery_enabled = 1;
     tox_options.tcp_port = 0; // disable tcp relay function!
-    tox_options.start_port = udp_start_port;
-    // tox_options.end_port = udp_end_port;
-    // tox_options.hole_punching_enabled = 1;
+    tox_options.start_port = 1024;
+    tox_options.end_port = 65534;
+    tox_options.hole_punching_enabled = 1;
     parse_all_proxy(&tox_options);
 
     log_printf(L_INFO, "Using %d for TCP relay port and %d-%d for UDP", 

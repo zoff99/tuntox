@@ -3,7 +3,7 @@
 
 #include <unistd.h>
 #include <stdint.h>
-#include <tox/tox.h>
+#include "tox/tox.h"
 #define countof(x) (sizeof(x)/sizeof(*(x)))
 #define char_t unsigned char
 

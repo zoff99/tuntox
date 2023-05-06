@@ -3,7 +3,7 @@
 #include <arpa/inet.h>
 #include <errno.h>
 #include <string.h>
-#include <tox/tox.h>
+#include "tox/tox.h"
 #include <stdio.h>
 #include <stdlib.h>
 

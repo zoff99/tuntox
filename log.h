@@ -1,4 +1,4 @@
-#include <tox/tox.h>
+#include "tox/tox.h"
 
 #define L_ERROR 	3
 #define L_WARNING	4

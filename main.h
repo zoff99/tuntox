@@ -19,7 +19,7 @@
 #include <sys/types.h>
 #include <syslog.h>
 #include <time.h>
-#include <tox/tox.h>
+#include "tox/tox.h"
 #include <unistd.h>
 
 #include "util.h"
