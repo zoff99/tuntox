@@ -1,0 +1,70 @@
+name: test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  update-nightly-tag:
+    name: Update nightly release tag
+    runs-on: ubuntu-20.04
+    if: github.event_name == 'push' && github.ref == 'refs/heads/zoff99/tweaks_001'
+    permissions:
+        contents: write
+    steps:
+      - uses: actions/checkout@v3
+      - name: Move nightly tag to head for nightly release
+        run: git tag -f nightly && git push origin nightly -f
+
+  build-nightly-artifact:
+    name: Nightly Artifact Build
+    runs-on: ubuntu-20.04
+    needs: [update-nightly-tag]
+    if: |
+      always() &&
+      (needs.update-nightly-tag.result == 'success' ||
+        needs.update-nightly-tag.result == 'skipped')
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      - name: install dependencies
+        run: |
+          sudo apt-get update && \
+          sudo DEBIAN_FRONTEND=noninteractive \
+          apt-get install -y --no-install-recommends \
+          ca-certificates \
+          libconfig-dev \
+          libsodium-dev \
+          pkg-config
+      - name: compile binary
+        run: |
+          make
+
+      - name: test binary
+        run: |
+          ldd tuntox
+          ls -hal tuntox
+          ./tuntox
+
+      - name: Rename artifact for nightly upload
+        if: github.event_name == 'push' && github.ref == 'refs/heads/zoff99/tweaks_001'
+        run: |
+          cp ./tuntox tuntox_nightly
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: tuntox
+          path: tuntox
+      - name: Upload to nightly release
+        uses: ncipollo/release-action@v1
+        if: github.event_name == 'push' && github.ref == 'refs/heads/zoff99/tweaks_001'
+        with:
+          allowUpdates: true
+          tag: nightly
+          omitBodyDuringUpdate: true
+          omitNameDuringUpdate: true
+          prerelease: true
+          replacesArtifacts: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          artifacts: "tuntox"
