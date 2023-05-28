@@ -43,7 +43,7 @@ jobs:
 
       - name: test binary
         run: |
-          ldd tuntox
+          ldd tuntox || echo ""
           ls -hal tuntox
           ./tuntox
 
