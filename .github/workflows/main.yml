@@ -45,7 +45,9 @@ jobs:
         run: |
           ldd tuntox || echo ""
           ls -hal tuntox
-          ./tuntox
+          ./tuntox -V
+          ./tuntox &
+          sleep 50
 
       - name: Rename artifact for nightly upload
         if: github.event_name == 'push' && github.ref == 'refs/heads/zoff99/tweaks_001'
