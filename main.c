@@ -117,13 +117,28 @@ int rule_match(rule *r, rule *candidate)
     return port_match && host_match ? 0 : -1;
 }
 
+/* When a file descriptor has been added to or removed from select() fdset,
+ * we need to update select_nfds. */
 void update_select_nfds(int fd)
 {
-    /* TODO maybe replace with a scan every time to make select() more efficient in the long run? */
+    int new_select_nfds = 0;
+
     if(fd + 1 > select_nfds)
     {
         select_nfds = fd + 1;
     }
+
+    for(int i = 0; i < select_nfds; i++)
+    {
+	if(FD_ISSET(i, &master_server_fds))
+	{
+	    if(i + 1 > new_select_nfds)
+	    {
+		new_select_nfds = i + 1;
+	    }
+	}
+    }
+    select_nfds = new_select_nfds;
 }
 
 /* Constructor. Returns NULL on failure. */
@@ -158,6 +173,7 @@ void tunnel_delete(tunnel *t)
     {
         close(t->sockfd);
         FD_CLR(t->sockfd, &master_server_fds);
+	update_select_nfds(0);
     }
     HASH_DEL( by_id, t );
     free(t);
@@ -1148,7 +1164,7 @@ static void child_handler(int signum)
 }
 
 /* 
- * Daemonize the process if -D is set
+ * Daemonize the process if -z is set
  * Optionally drop privileges and create a lock file
  */
 void do_daemonize()
@@ -1382,7 +1398,7 @@ void help()
     fprintf(stdout, "    -d          - debug mode (use twice to display toxcore log too)\n");
     fprintf(stdout, "    -q          - quiet mode\n");
     fprintf(stdout, "    -S          - send output to syslog instead of stdout\n");
-    fprintf(stdout, "    -D          - daemonize (fork) and exit (implies -S)\n");
+    fprintf(stdout, "    -z          - daemonize (fork) and exit (implies -S)\n");
     fprintf(stdout, "    -F <path>   - create a PID file named <path>\n");
     fprintf(stdout, "    -U <username|userid> - drop privileges to <username> before forking. Use\n");
     fprintf(stdout, "                           numeric <userid> in static builds.\n");
@@ -1415,7 +1431,7 @@ int main(int argc, char *argv[])
 
     log_init();
 
-    while ((oc = getopt(argc, argv, "L:pi:I:C:s:f:W:dqhSF:DU:t:u:b:V")) != -1)
+    while ((oc = getopt(argc, argv, "L:pi:I:C:s:f:W:dqhSF:DzU:t:u:b:V")) != -1)
     {
         switch(oc)
         {
@@ -1537,7 +1553,7 @@ int main(int argc, char *argv[])
             case 'S':
                 use_syslog = 1;
                 break;
-            case 'D':
+            case 'z':
                 daemonize = 1;
                 use_syslog = 1;
                 break;

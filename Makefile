@@ -1,6 +1,6 @@
 SOURCES = $(wildcard *.c)
 DEPS=libsodium
-CC=gcc
+CC?=$(CC)
 CFLAGS=-g -Wall #-std=c99
 CFLAGS += $(shell pkg-config --cflags $(DEPS))
 LDFLAGS=-g -pthread -lm -static
@@ -19,14 +19,18 @@ ifneq ($(OS),Darwin)
 	DSO_LDFLAGS += -lrt
 endif
 
-prefix ?= /usr
-bindir ?= $(prefix)/bin
+PREFIX ?= /usr
+BINDIR ?= $(PREFIX)/bin
 
 # Targets
 all: tuntox tuntox_nostatic
 
 gitversion.h: FORCE
-	@if [ -f .git/HEAD ] ; then echo "  GEN   $@"; echo "#define GITVERSION \"$(shell git rev-parse HEAD)\"" > $@; fi
+	@if [ -d .git ]; then \
+		echo "  GEN   $@"; \
+		echo "#define GITVERSION \"$(shell git rev-parse HEAD)\"" > $@; \
+	fi
+
 
 FORCE:
 
@@ -48,10 +52,10 @@ cscope.out:
 	@cscope -bv ./*.[ch] &> /dev/null
 
 clean:
-	rm -f *.o tuntox cscope.out gitversion.h tox_bootstrap.h
+	$(RM) *.o tuntox cscope.out gitversion.h tox_bootstrap.h
 
 install: tuntox_nostatic
-	$(INSTALL_MKDIR) -d $(DESTDIR)$(bindir)
-	cp tuntox_nostatic $(DESTDIR)$(bindir)/tuntox
+	$(INSTALL_MKDIR) -d $(DESTDIR)$(BINDIR)
+	$(INSTALL) tuntox_nostatic $(DESTDIR)$(BINDIR)/tuntox
 
 .PHONY: all clean tuntox
