@@ -25,7 +25,7 @@ BINDIR ?= $(PREFIX)/bin
 # Targets
 all: tuntox tuntox_nostatic
 
-gitversion.h: FORCE
+gitversion.h:
 	@if [ -d .git ]; then \
 		echo "  GEN   $@"; \
 		echo "#define GITVERSION \"$(shell git rev-parse HEAD)\"" > $@; \
