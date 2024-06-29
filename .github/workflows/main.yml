@@ -69,13 +69,13 @@ jobs:
           cp ./asan_tuntox_nostatic asan_tuntox_nostatic_nightly
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: tuntox
           path: tuntox
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: asan_tuntox_nostatic
           path: asan_tuntox_nostatic
