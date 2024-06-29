@@ -1,7 +1,7 @@
 SOURCES = $(wildcard *.c)
 DEPS=libsodium
 CC?=$(CC)
-CFLAGS=-g -Wall #-std=c99
+CFLAGS=-g -O3 -fPIC -Wall -D_FORTIFY_SOURCE=2 --param=ssp-buffer-size=1 -fstack-protector-all -Wno-unused-variable -Wno-unknown-pragmas -Wno-array-parameter -Wno-enum-compare -Wno-unused-result #-std=c99
 CFLAGS += $(shell pkg-config --cflags $(DEPS))
 LDFLAGS=-g -pthread -lm -static
 LDFLAGS += $(shell pkg-config --static --libs $(DEPS))
