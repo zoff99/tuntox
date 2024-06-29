@@ -1,4 +1,5 @@
 tuntox_nostatic
+asan_tuntox_nostatic
 tuntox
 cJSON.o
 client.o
