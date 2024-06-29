@@ -1,12 +1,19 @@
 SOURCES = $(wildcard *.c)
 DEPS=libsodium
-CC?=$(CC)
+
+ismingw = 0
+ccmachine = $(shell $(CC) -dumpmachine)
+ifeq ($(findstring mingw, $(ccmachine)), mingw)
+  ismingw = 1
+  CFLAGS += --static
+endif
+
 ASAN_CFLAGS = -fsanitize=address -fno-omit-frame-pointer -static-libasan
-CFLAGS=-g -O3 -fPIC -Wall -D_FORTIFY_SOURCE=2 --param=ssp-buffer-size=1 -fstack-protector-all -Wno-unused-variable -Wno-unknown-pragmas -Wno-array-parameter -Wno-enum-compare -Wno-unused-result -Wno-format-truncation #-std=c99
+CFLAGS += -g -O3 -fPIC -Wall -D_FORTIFY_SOURCE=2 -fstack-protector-strong -Wno-unused-variable -Wno-unknown-pragmas -Wno-array-parameter -Wno-enum-compare -Wno-unused-result -Wno-format-truncation #-std=c99
 CFLAGS += $(shell pkg-config --cflags $(DEPS))
-LDFLAGS=-g -pthread -lm -static
+LDFLAGS += -g -pthread -lm -static
 LDFLAGS += $(shell pkg-config --static --libs $(DEPS))
-DSO_LDFLAGS=-g -pthread -lm
+DSO_LDFLAGS += -g -pthread -lm
 DSO_LDFLAGS += $(shell pkg-config --libs $(DEPS))
 OBJECTS=$(SOURCES:.c=.o)
 INCLUDES = $(wildcard *.h)
@@ -40,8 +47,8 @@ asan_build:
 	$(eval CFLAGS += $(ASAN_CFLAGS))
 
 %.o: %.c $(INCLUDES) gitversion.h tox_bootstrap.h
-	@echo "  CC    $@"
-	@$(CC) -c $(CFLAGS) $< -o $@
+	# @echo "  CC    $@"
+	$(CC) -c $(CFLAGS) $< -o $@
 
 tuntox: $(OBJECTS) $(INCLUDES)
 	$(CC) -o $@ $(OBJECTS) -lpthread $(LDFLAGS) 
