@@ -37,9 +37,14 @@ jobs:
           libconfig-dev \
           libsodium-dev \
           pkg-config
+
       - name: compile binary
         run: |
-          make
+          make -j5 all
+
+      - name: compile binary with ASAN
+        run: |
+          make -j5 asan_all
 
       - name: test binary
         run: |
@@ -49,15 +54,32 @@ jobs:
           ./tuntox &
           sleep 50
 
+      - name: test binary
+        run: |
+          ldd asan_tuntox_nostatic || echo ""
+          ls -hal asan_tuntox_nostatic
+          ./asan_tuntox_nostatic -V
+          ./asan_tuntox_nostatic &
+          sleep 50
+
       - name: Rename artifact for nightly upload
         if: github.event_name == 'push' && github.ref == 'refs/heads/zoff99/tweaks_001'
         run: |
           cp ./tuntox tuntox_nightly
+          cp ./asan_tuntox_nostatic asan_tuntox_nostatic_nightly
+
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: tuntox
           path: tuntox
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: asan_tuntox_nostatic
+          path: asan_tuntox_nostatic
+
       - name: Upload to nightly release
         uses: ncipollo/release-action@v1
         if: github.event_name == 'push' && github.ref == 'refs/heads/zoff99/tweaks_001'
@@ -69,4 +91,4 @@ jobs:
           prerelease: true
           replacesArtifacts: true
           token: ${{ secrets.GITHUB_TOKEN }}
-          artifacts: "tuntox"
+          artifacts: "tuntox_nightly,asan_tuntox_nostatic_nightly"
