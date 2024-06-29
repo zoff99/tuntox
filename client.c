@@ -708,7 +708,7 @@ int do_client_loop(uint8_t *tox_id_str)
                 break;
         }
 
-        usleep(tox_iteration_interval(tox) * 1000);
+        usleep(tox_iteration_interval(tox) * 500);
     }
 }
 

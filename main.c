@@ -416,14 +416,8 @@ int send_frame(protocol_frame *frame, uint8_t *data)
             }
         }
 
-        if(i == 0) i = 2;
-        else i = i * 2;
-
-        for(j = 0; j < i; j++)
-        {
-            tox_iterate(tox, NULL);
-            usleep(j * 1000);
-        }
+        tox_iterate(tox, NULL);
+        usleep(2 * 1000);
     }
 
     if(i > 0 && rv >= 0)
