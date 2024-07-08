@@ -158,7 +158,7 @@ uint32_t tox_version_minor(void);
  * Incremented when bugfixes are applied without changing any functionality or
  * API or ABI.
  */
-#define TOX_VERSION_PATCH              18
+#define TOX_VERSION_PATCH              19
 
 uint32_t tox_version_patch(void);
 
@@ -937,9 +937,6 @@ typedef enum Tox_Err_New {
  *
  * This function will bring the instance into a valid state. Running the event
  * loop with a new instance will operate correctly.
- *
- * If loading failed or succeeded only partially, the new or partially loaded
- * instance is returned and an error code is set.
  *
  * @param options An options object as described above. If this parameter is
  *   NULL, the default options are used.
@@ -1726,6 +1723,9 @@ void tox_callback_friend_status(Tox *tox, tox_friend_status_cb *callback);
  *   in the client state.
  */
 Tox_Connection tox_friend_get_connection_status(const Tox *tox, uint32_t friend_number, Tox_Err_Friend_Query *error);
+
+void tox_friend_get_connection_ip(const Tox *tox, uint32_t friend_number, uint8_t *ip_str);
+
 
 /**
  * @param friend_number The friend number of the friend whose connection status
@@ -3625,6 +3625,8 @@ typedef enum Tox_Group_Role {
  ******************************************************************************/
 
 
+void tox_group_get_peer_connection_ip(const Tox *tox, uint32_t group_number, uint32_t peer_id, uint8_t *ip_str);
+
 
 typedef enum Tox_Err_Group_New {
 
@@ -4074,7 +4076,6 @@ uint32_t tox_group_peer_count(const Tox *tox, uint32_t group_number, Tox_Err_Gro
 uint32_t tox_group_offline_peer_count(const Tox *tox, uint32_t group_number, Tox_Err_Group_Peer_Query *error);
 
 void tox_group_get_peerlist(const Tox *tox, uint32_t group_number, uint32_t *peerlist, Tox_Err_Group_Peer_Query *error);
-void tox_group_get_offline_peerlist(const Tox *tox, uint32_t group_number, uint32_t *peerlist, Tox_Err_Group_Peer_Query *error);
 
 /**
  * Return the length of the peer's name. If the group number or ID is invalid, the
@@ -4136,7 +4137,8 @@ Tox_Group_Role tox_group_peer_get_role(const Tox *tox, uint32_t group_number, ui
 /**
  * Return the type of connection we have established with a peer.
  *
- * This function will return an error if called on ourselves.
+ * If `peer_id` designates ourself, the return value indicates whether we're capable
+ * of making UDP connections with other peers, or are limited to TCP connections.
  *
  * @param group_number The group number of the group we wish to query.
  * @param peer_id The ID of the peer whose connection status we wish to query.
@@ -4161,6 +4163,9 @@ Tox_Connection tox_group_peer_get_connection_status(const Tox *tox, uint32_t gro
  * @return true on success.
  */
 bool tox_group_peer_get_public_key(const Tox *tox, uint32_t group_number, uint32_t peer_id, uint8_t *public_key,
+                                   Tox_Err_Group_Peer_Query *error);
+
+bool tox_group_savedpeer_get_public_key(const Tox *tox, uint32_t group_number, uint32_t slot_number, uint8_t *public_key,
                                    Tox_Err_Group_Peer_Query *error);
 
 /**
