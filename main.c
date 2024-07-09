@@ -117,28 +117,13 @@ int rule_match(rule *r, rule *candidate)
     return port_match && host_match ? 0 : -1;
 }
 
-/* When a file descriptor has been added to or removed from select() fdset,
- * we need to update select_nfds. */
 void update_select_nfds(int fd)
 {
-    int new_select_nfds = 0;
-
+    /* TODO maybe replace with a scan every time to make select() more efficient in the long run? */
     if(fd + 1 > select_nfds)
     {
         select_nfds = fd + 1;
     }
-
-    for(int i = 0; i < select_nfds; i++)
-    {
-	if(FD_ISSET(i, &master_server_fds))
-	{
-	    if(i + 1 > new_select_nfds)
-	    {
-		new_select_nfds = i + 1;
-	    }
-	}
-    }
-    select_nfds = new_select_nfds;
 }
 
 /* Constructor. Returns NULL on failure. */
@@ -173,7 +158,6 @@ void tunnel_delete(tunnel *t)
     {
         close(t->sockfd);
         FD_CLR(t->sockfd, &master_server_fds);
-	update_select_nfds(0);
     }
     HASH_DEL( by_id, t );
     free(t);
