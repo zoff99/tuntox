@@ -401,7 +401,7 @@ int send_frame(protocol_frame *frame, uint8_t *data)
         }
 
         tox_iterate(tox, NULL);
-        usleep(2 * 1000);
+        usleep(10 * 1000);
     }
 
     if(i > 0 && rv >= 0)
