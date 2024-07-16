@@ -69,8 +69,8 @@ jobs:
       - name: Rename artifact for nightly upload
         if: github.event_name == 'push' && github.ref == 'refs/heads/zoff99/tweaks_001'
         run: |
-          cp ./tuntox tuntox_nightly
-          cp ./asan_tuntox_nostatic asan_tuntox_nostatic_nightly
+          cp ./tuntox linux_tuntox_nightly
+          cp ./asan_tuntox_nostatic linux_asan_tuntox_nostatic_nightly
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -95,7 +95,7 @@ jobs:
           prerelease: true
           replacesArtifacts: true
           token: ${{ secrets.GITHUB_TOKEN }}
-          artifacts: "tuntox_nightly,asan_tuntox_nostatic_nightly"
+          artifacts: "linux_tuntox_nightly,linux_asan_tuntox_nostatic_nightly"
 
   build-macos:
     runs-on: macos-12
