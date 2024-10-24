@@ -85,3 +85,11 @@ Sorry about GPLv3 - both toxcore and utox (from which I borrowed some code) are 
 Thank you to the toxcore and utox developers without whom this program would never exist.
 
 Thank you Mr_4551 for your help and motivation.
+
+
+<br>
+Any use of this project's code by GitHub Copilot, past or present, is done
+without our permission.  We do not consent to GitHub's use of this project's
+code in Copilot.
+<br>
+No part of this work may be used or reproduced in any manner for the purpose of training artificial intelligence technologies or systems.
