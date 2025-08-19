@@ -7,7 +7,7 @@ on:
 jobs:
   update-nightly-tag:
     name: Update nightly release tag
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     if: github.event_name == 'push' && github.ref == 'refs/heads/zoff99/tweaks_001'
     permissions:
         contents: write
@@ -18,7 +18,7 @@ jobs:
 
   build-linux:
     name: Linux
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: [update-nightly-tag]
     if: |
       always() &&
@@ -98,7 +98,7 @@ jobs:
           artifacts: "linux_tuntox_nightly,linux_asan_tuntox_nostatic_nightly"
 
   build-macos:
-    runs-on: macos-12
+    runs-on: macos-13
     needs: [update-nightly-tag]
     if: |
       always() &&
