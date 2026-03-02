@@ -73,13 +73,13 @@ jobs:
           cp ./asan_tuntox_nostatic linux_asan_tuntox_nostatic_nightly
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: tuntox
           path: tuntox
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: asan_tuntox_nostatic
           path: asan_tuntox_nostatic
@@ -128,7 +128,7 @@ jobs:
         run: |
           cp ./tuntox_nostatic macos_tuntox_nostatic_nightly
       - name: Upload artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: macos_tuntox_nostatic_nightly
           path: macos_tuntox_nostatic_nightly
@@ -178,7 +178,7 @@ jobs:
         run: |
           cp ./tuntox_nostatic macos_arm_tuntox_nostatic_nightly
       - name: Upload artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: macos_arm_tuntox_nostatic_nightly
           path: macos_arm_tuntox_nostatic_nightly
